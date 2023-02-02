@@ -19,6 +19,11 @@ jobs:
             id-token: write
         runs-on: ubuntu-latest
         steps:
+            - name: Collect Workflow Telemetry
+              uses: runforesight/foresight-workflow-kit-action@v1
+              if: ${{ always() }}
+              with:
+               api_key: b31c77ac-0a8e-43e4-b32c-5cfa9bf27bb8
             - uses: actions/checkout@v3
             - uses: azure/login@v1.4.3
               name: Azure login
@@ -56,3 +61,13 @@ jobs:
                 images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
                 manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
                 namespace: namespace-workflow-1674723312695
+            - name: Analyze Test and/or Coverage Results
+              uses: runforesight/foresight-test-kit-action@v1
+              if: ${{ always() }}
+              with:
+                api_key: b31c77ac-0a8e-43e4-b32c-5cfa9bf27bb8
+                test_format: TestNG
+                test_framework: TestNG
+                test_path: <test_results_path_optional>
+                coverage_format: JACOCO/XML
+                coverage_path: <coverage_results_path_optional>
